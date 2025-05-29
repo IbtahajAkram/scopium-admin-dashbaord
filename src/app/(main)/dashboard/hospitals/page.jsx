@@ -135,6 +135,7 @@ const Hospitals = [
   <Plus className="text-white animate-pulse" />
   <span className="font-semibold tracking-wide">Add Hospital</span>
 </button>
+{/* cc */}
           </div>
          </div>
        
