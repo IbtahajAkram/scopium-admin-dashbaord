@@ -4,49 +4,80 @@ import { useState } from "react";
 import { toast } from "react-toastify";
 import { useRouter } from "next/navigation";
 import api from "../../utils/axiosInterceptor"; // 👈 import interceptor instance
-
+import Lottie from "lottie-react";
+import animation from "../../../app/(main)/animations.json";
 const page = () => {
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(false);
+  const [showAnimation, setAnimation] = useState(false);
+
+
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const router = useRouter();
 
-const handleLogin = async () => {
-  setLoading(true);
-  setError(null);
+  const handleLogin = async () => {
+    setLoading(true);
+    setError(null);
 
-  try {
-    const response = await api.post("/ekg/login/", { email, password });
+    try {
+      const response = await api.post("/ekg/login/", { email, password });
 
-    // Toast success message after login
-    toast.success("Login successful!");
+      // Toast success message after login
+      toast.success("Login successful!");
 
-    // Token ya user data handle karein
-    const { token, user } = response.data;
+      // Token ya user data handle karein
+      const { token, user } = response.data;
 
-    localStorage.setItem("token", token);
-
-    // Navigate to home or relevant page
-    router.push("/");
-    
-  } catch (err) {
-    const message =
-      err.response?.data?.message || "Login failed. Please try again.";
-    setError(message);
-    toast.error(message);
-  } finally {
-    setLoading(false);
-  }
-};
-
-
+      setAnimation(true)
+      localStorage.setItem("token", token);
+      setTimeout(() => {
+        setAnimation(false)
+        router.push("/");
+      }, 1000);
+      // Navigate to home or relevant page
+    } catch (err) {
+      const message =
+        err.response?.data?.message || "Login failed. Please try again.";
+      setError(message);
+      toast.error(message);
+    } finally {
+      setLoading(false);
+    }
+  };
+  const Loader = () => (
+  <div style={{
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'center',
+    height: '90vh',
+    background: '#fff',
+    flexDirection: 'column',
+  }}>
+    <Lottie animationData={animation} loop={true} style={{ width: 390, height: 390 }} />
+    {/* <p
+    className="mx-auto md:text-[15px]"
+    style={{
+      marginTop: '1px',
+      color: '#EC003F',
+      fontSize: '1rem',
+      
+      fontWeight: 'bold',
+    }}>
+      Loading your awesome products...
+    </p> */}
+  </div>
+);
   return (
+
+    <>
+    {/* {showAnimation ? (
+       <Loader />
+      ) : ( */}
     <div className="flex min-h-screen w-full items-center justify-center bg-gradient-to-br from-blue-50 to-indigo-50 p-4">
       <form
         noValidate
         className="w-full max-w-md rounded-2xl bg-white p-8 shadow-xl"
-       
       >
         <h1 className="mb-8 text-center text-3xl font-bold text-gray-800">
           Welcome Back
@@ -95,7 +126,7 @@ const handleLogin = async () => {
           <button
             type="button"
             disabled={loading}
-            onClick={ handleLogin}
+            onClick={handleLogin}
             className="w-full cursor-pointer rounded-lg bg-[#0156ce] px-4 py-3 text-base font-medium text-white transition-colors hover:bg-[#2E69DE] focus:outline-none focus:ring-2 focus:ring-[#0556f8] focus:ring-offset-2 disabled:opacity-50"
           >
             {loading ? "Loading..." : "Sign In"}
@@ -113,6 +144,8 @@ const handleLogin = async () => {
         </div>
       </form>
     </div>
+    {/* )} */}
+    </>
   );
 };
 
